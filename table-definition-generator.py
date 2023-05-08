@@ -20,6 +20,7 @@ class C(IntEnum):
     """
     SHOW FULL COLUMNSで返ってくる項目
     """
+
     Field = 0
     Type = 1
     Collection = 2
@@ -35,6 +36,7 @@ class T(IntEnum):
     """
     SHOW TABLE STATUSで返ってくる項目（使うところだけ定義）
     """
+
     Name = 0
     Comment = 17
 
@@ -43,6 +45,7 @@ class I(IntEnum):
     """
     SHOW INDEXS ~~で返ってくる項目（使うところだけ定義）
     """
+
     Key_Name = 2
     Column_Name = 4
 
@@ -52,11 +55,8 @@ print("Start.")
 
 # データベースへの接続とカーソルの生成
 connection = MySQLdb.connect(
-    host=DB_HOST,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    port=DB_PORT,
-    database=DB_NAME)
+    host=DB_HOST, user=DB_USER, password=DB_PASSWORD, port=DB_PORT, database=DB_NAME
+)
 cursor = connection.cursor()
 
 
@@ -64,22 +64,25 @@ cursor = connection.cursor()
 table_name_list = []
 table_comment_list = []
 
-cursor.execute("""
+cursor.execute(
+    """
     SHOW TABLE STATUS;
-    """)
+    """
+)
 
 for row in cursor:
-    table_name_list .append(row[T.Name])
+    table_name_list.append(row[T.Name])
     table_comment_list.append(row[T.Comment])
 
 
 with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
     # テーブルごとにカラム定義を取得
     for table_name, table_comment in zip(table_name_list, table_comment_list):
-
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
             SHOW FULL COLUMNS FROM `{table_name}`;
-            """)
+            """
+        )
 
         # テーブル名を出力
         file.write(f"## {table_name}({table_comment})\n")
@@ -90,14 +93,18 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
         file.write("|---|---|---|---|---|---|\n")
 
         for row in cursor:
-            file.write(f"|{row[C.Comment]}|{row[C.Field]}|{row[C.Type]}|{row[C.Key]}|{row[C.Null]}|{row[C.Extra]}|\n")
+            file.write(
+                f"|{row[C.Comment]}|{row[C.Field]}|{row[C.Type]}|{row[C.Key]}|{row[C.Null]}|{row[C.Extra]}|\n"
+            )
 
         file.write("\n")
 
         # Indexの情報を作成
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
             SHOW INDEX FROM `{table_name}`;
-            """)
+            """
+        )
         file.write("|インデックス名|対象カラム名|複合キーのキー順序|\n")
         file.write("|---|---|---|\n")
 
