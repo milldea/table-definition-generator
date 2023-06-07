@@ -5,7 +5,7 @@ from enum import IntEnum
 
 OUTPUT_FILE = "table-definition.md"
 
-# DBの環境情報を読み込み
+# region DBの環境情報を読み込み
 config_json = open("config.json", "r")
 config = json.load(config_json)
 
@@ -14,8 +14,10 @@ DB_USER = config["DB_USER"]
 DB_PASSWORD = config["DB_PASSWORD"]
 DB_PORT = config["DB_PORT"]
 DB_NAME = config["DB_NAME"]
+# endregion
 
 
+# region SQLで取得できる項目の列番号を定義
 class C(IntEnum):
     """
     SHOW FULL COLUMNSで返ってくる項目
@@ -50,17 +52,19 @@ class I(IntEnum):
     Column_Name = 4
 
 
+# endregion
+
 # 処理開始
 print("Start.")
 
-# データベースへの接続とカーソルの生成
+# region データベースへの接続とカーソルの生成
 connection = MySQLdb.connect(
     host=DB_HOST, user=DB_USER, password=DB_PASSWORD, port=DB_PORT, database=DB_NAME
 )
 cursor = connection.cursor()
+# endregion
 
-
-# テーブルの一覧を取得
+# region テーブルの一覧を取得
 table_name_list = []
 table_comment_list = []
 
@@ -73,10 +77,10 @@ cursor.execute(
 for row in cursor:
     table_name_list.append(row[T.Name])
     table_comment_list.append(row[T.Comment])
-
+# endregion
 
 with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
-    # テーブルごとにカラム定義を取得
+    # region テーブルごとにカラム定義を取得
     for table_name, table_comment in zip(table_name_list, table_comment_list):
         cursor.execute(
             f"""
@@ -88,7 +92,7 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
         file.write(f"## {table_name}({table_comment})\n")
         file.write("\n")
 
-        # カラム情報を出力
+        # region カラム情報を出力
         file.write("|物理名|論理名|型|キー制約|Null制約|その他制約|\n")
         file.write("|---|---|---|---|---|---|\n")
 
@@ -98,8 +102,9 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
             )
 
         file.write("\n")
+        # endregion
 
-        # Indexの情報を作成
+        # region Indexの情報を作成
         cursor.execute(
             f"""
             SHOW INDEX FROM `{table_name}`;
@@ -127,6 +132,8 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
 
         file.write("\n")
         file.write("\n")
+        # endregion
+    # endregion
 
 # 接続を閉じる
 connection.close()
