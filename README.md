@@ -55,3 +55,42 @@ MySQLで構築しているRDBのテーブル定義をmarkdown形式で出力す�
 1.  `python3 table-definition-generator.py`を実行する。
     *  Windows環境の場合、特に何も考えずにインストールしていたらpython3ではなくpythonコマンドだと思うので、`python table-definition-generator.py`を実行。（この辺りは環境に合わせて良きに調整してください）
 2.  `output/` ディレクトリ内に`config.json`に定義した`OUTPUT_FILE`のファイル名でファイルが出力される。
+
+---
+
+## sample(サンプルテーブル)
+
+|論理名|物理名|型|キー制約|Null制約|その他制約|
+|---|---|---|---|---|---|
+|ID|id|int unsigned|PRI|NO|auto_increment|
+|カラム1|column1|int|MUL|NO||
+|文字列カラム2|column2|varchar(50)||YES||
+|日時|column3|datetime|MUL|YES||
+|カテゴリー|category|enum(<br>　'INFO',<br>　'WARN',<br>　'ALERT'<br>)||YES||
+|作成日時|created_at|datetime||YES|DEFAULT_GENERATED|
+|更新日時|updated_at|datetime||YES|DEFAULT_GENERATED on update CURRENT_TIMESTAMP|
+
+|インデックス名|対象カラム名|複合キーのキー順序|
+|---|---|---|
+|PRIMARY|id|1|
+|Sample_INDEX|column1|1|
+|Sample_INDEX2|column3|1|
+||column2|2|
+
+### 【参考】サンプルテーブルの構成
+
+```
+CREATE TABLE IF NOT EXISTS `sample` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `column1` int NOT NULL COMMENT 'カラム1',
+  `column2` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文字列カラム2',
+  `column3` datetime DEFAULT NULL COMMENT '日時',
+  `category` enum('INFO','WARN','ALERT') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'INFO' COMMENT 'カテゴリー',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `Sample_INDEX` (`column1`) USING BTREE,
+  KEY `Sample_INDEX2` (`column3`,`column2`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='サンプルテーブル';
+
+```
