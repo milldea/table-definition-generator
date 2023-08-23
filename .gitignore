@@ -1,5 +1,5 @@
 config.json
-!output/sample*
 output/*
+!output/sample*
 packages/*
 !packages/.gitkeep
