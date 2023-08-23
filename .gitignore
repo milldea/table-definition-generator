@@ -2,3 +2,4 @@ config.json
 !output/sample*
 output/*
 packages/*
+!packages/.gitkeep
