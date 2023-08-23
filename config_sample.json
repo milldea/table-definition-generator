@@ -3,5 +3,6 @@
   "DB_USER": "dbuser",
   "DB_PASSWORD": "password",
   "DB_PORT": 3306,
-  "DB_NAME": "sampledb"
+  "DB_NAME": "sampledb",
+  "OUTPUT_FILE" : "table-definition.md"
 }

@@ -1,2 +1,4 @@
 config.json
-output/*.md
+!output/sample*
+output/*
+packages/*

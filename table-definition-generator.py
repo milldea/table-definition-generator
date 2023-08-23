@@ -1,19 +1,26 @@
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "packages"))
 # MySQLdbのインポート
 import MySQLdb
 import json
 from enum import IntEnum
 
-OUTPUT_FILE = "table-definition.md"
-
-# region DBの環境情報を読み込み
-config_json = open("config.json", "r")
+# region 環境情報を読み込み
+config_json = open("config.json", "r", encoding="utf_8")
 config = json.load(config_json)
 
+# DBの環境情報
 DB_HOST = config["DB_HOST"]
 DB_USER = config["DB_USER"]
 DB_PASSWORD = config["DB_PASSWORD"]
 DB_PORT = config["DB_PORT"]
 DB_NAME = config["DB_NAME"]
+
+# 出力するファイル名
+OUTPUT_FILE = config["OUTPUT_FILE"]
+
 # endregion
 
 
@@ -93,12 +100,22 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
         file.write("\n")
 
         # region カラム情報を出力
-        file.write("|物理名|論理名|型|キー制約|Null制約|その他制約|\n")
+        file.write("|論理名|物理名|型|キー制約|Null制約|その他制約|\n")
         file.write("|---|---|---|---|---|---|\n")
 
         for row in cursor:
+            # enumだった場合、そのまま出力すると見づらいので値ごとに改行を挟む
+            type = row[C.Type]
+            if "enum" in row[C.Type]:
+                type = (
+                    row[C.Type]
+                    .replace("(", "(<br>　")
+                    .replace(",", ",<br>　")
+                    .replace(")", "<br>)")
+                )
+
             file.write(
-                f"|{row[C.Comment]}|{row[C.Field]}|{row[C.Type]}|{row[C.Key]}|{row[C.Null]}|{row[C.Extra]}|\n"
+                f"|{row[C.Comment]}|{row[C.Field]}|{type}|{row[C.Key]}|{row[C.Null]}|{row[C.Extra]}|\n"
             )
 
         file.write("\n")
