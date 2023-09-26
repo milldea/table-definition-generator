@@ -115,7 +115,7 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
                 )
 
             file.write(
-                f"|{row[C.Comment]}|{row[C.Field]}|{type}|{row[C.Key]}|{row[C.Null]}|{row[C.Extra]}|\n"
+                f"|{row[C.Comment]} |{row[C.Field]}|{type}|{row[C.Key]} |{row[C.Null]}|{row[C.Extra]} |\n"
             )
 
         file.write("\n")
@@ -139,7 +139,7 @@ with open(f"output/{OUTPUT_FILE}", mode="w", encoding="utf_8") as file:
                 # 前レコードと同じキーならキー順を一つ増やす
                 key_order += 1
                 # 同じキー名が続くと見づらいのでブランク
-                key_name = ""
+                key_name = " "
             else:
                 # 前レコードと違うキーならリセット
                 key_order = 1
