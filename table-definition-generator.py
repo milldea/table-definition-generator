@@ -3,7 +3,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "packages"))
 # MySQLdbのインポート
-import MySQLdb
+import mysql.connector
 import json
 from enum import IntEnum
 
@@ -65,7 +65,7 @@ class I(IntEnum):
 print("Start.")
 
 # region データベースへの接続とカーソルの生成
-connection = MySQLdb.connect(
+connection = mysql.connector.connect(
     host=DB_HOST, user=DB_USER, password=DB_PASSWORD, port=DB_PORT, database=DB_NAME
 )
 cursor = connection.cursor()
